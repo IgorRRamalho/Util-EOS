@@ -1,70 +1,41 @@
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 
-def recalculo_rateio(matricula):
-    num_meses = simpledialog.askinteger("Recálculo de Rateio", "Digite o número de meses para recálculo:")
-    
-    referencias = []
-    for i in range(num_meses):
-        referencia = simpledialog.askstring("Recálculo de Rateio", f"Digite a referência para o mês {i + 1}:")
-        referencias.append(referencia)
-
-    script_sql_rateio = ""
-    for referencia in referencias:
-        script_sql_rateio += f"""
-------------------------------- Recalculo de Rateio {referencia} -----------------------------
-DELETE ligacao_vinculada_consumo
-    WHERE
-        matricula_pai = '{matricula}'
-        AND ano_mes_leitura = '{referencia}';
-COMMIT;
-p_rateio_fatura('{referencia}', '{matricula}', 0, 0);
-COMMIT;
-"""
-
-    with open('RECALCULO_RATEIO.sql', 'w') as file_rateio:
-        file_rateio.write(script_sql_rateio)
-
-    messagebox.showinfo("Recálculo de Rateio", "Script SQL de Recálculo de Rateio gerado com sucesso. Consulte o arquivo RECALCULO_RATEIO.sql.")
-
 def update_consumo(matricula):
     num_meses = simpledialog.askinteger("Update Consumo", "Digite o número de meses para update:")
-    
+
     referencias = []
     for i in range(num_meses):
         referencia = simpledialog.askstring("Update Consumo", f"Digite a referência para o mês {i + 1}:")
         referencias.append(referencia)
 
     colunas_disponiveis = ['confat', 'medconmed', 'media_consumo_faturado', 'credito_consumo']
-    
-    colunas_selecionadas = []
-    root_colunas = tk.Tk()
-    root_colunas.title("Escolha de Colunas")
-    
-    def salvar_colunas_selecionadas():
-        for coluna, checkvar in zip(colunas_disponiveis, checkboxes):
-            if checkvar.get():
-                colunas_selecionadas.append(coluna)
-        root_colunas.destroy()
-
-    checkboxes = []
-    for coluna in colunas_disponiveis:
-        checkvar = tk.BooleanVar()
-        checkbutton = tk.Checkbutton(root_colunas, text=coluna, variable=checkvar)
-        checkboxes.append(checkvar)
-        checkbutton.pack(anchor=tk.W)
-
-    tk.Button(root_colunas, text="Salvar", command=salvar_colunas_selecionadas).pack()
-
-    root_colunas.mainloop()
 
     colunas_valores = {}
     for referencia in referencias:
         colunas_valores[referencia] = {}
-        
-        for coluna in colunas_selecionadas:
-            valor = simpledialog.askstring("Update Consumo", f"Digite o valor para a coluna {coluna} para a referência {referencia}:")
-            colunas_valores[referencia][coluna] = valor
+
+        root_colunas = tk.Tk()
+        root_colunas.title(f"Escolha de Colunas e Valores - Referência: {referencia}")
+
+        def salvar_colunas_selecionadas():
+            nonlocal colunas_valores
+            colunas_valores[referencia] = {}
+            for coluna, entry in zip(colunas_disponiveis, entry_boxes):
+                valor = entry.get()
+                colunas_valores[referencia][coluna] = valor
+            root_colunas.destroy()
+
+        entry_boxes = []
+        for coluna in colunas_disponiveis:
+            tk.Label(root_colunas, text=f"Valor para {coluna}").pack()
+            entry = tk.Entry(root_colunas)
+            entry_boxes.append(entry)
+            entry.pack()
+
+        tk.Button(root_colunas, text="Salvar", command=salvar_colunas_selecionadas).pack()
+
+        root_colunas.mainloop()
 
     script_sql_consumo = ""
     for referencia, valores in colunas_valores.items():
@@ -87,7 +58,7 @@ COMMIT;
     messagebox.showinfo("Update Consumo", "Script SQL de Update Consumo gerado com sucesso. Consulte o arquivo UPDATE_CONSUMO.sql.")
 
 # Função para exibir o menu
-def exibir_menu():
+def exibir_menu(matricula):
     while True:
         escolha = simpledialog.askinteger("Menu", "1. Recálculo de Rateio\n2. Update Consumo\n0. Sair\n\nEscolha a opção (0-2):")
 
@@ -109,7 +80,7 @@ root = tk.Tk()
 root.withdraw()  # Ocultando a janela principal
 
 # Exibindo o menu
-exibir_menu()
+exibir_menu(matricula)
 
 # Iniciando o loop da interface gráfica
 root.mainloop()

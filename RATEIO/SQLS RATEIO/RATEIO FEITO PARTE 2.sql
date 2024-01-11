@@ -11,24 +11,24 @@ BEGIN
   SELECT SIGLA INTO V_SIGLA FROM EMPRESA WHERE ID_EMPRESA = '0001';
   IF V_SIGLA = 'DESO' THEN
   
-	
+
 ----------------------------CANCELA CONTA MES 12-----------------------------
     --VERIFICA SITUACAO DA CONTA = 0 OU PAGA COM VALOR 0
     V_EXISTE := 0;
     SELECT COUNT(*)
       INTO V_EXISTE
       FROM CONTA C
-     WHERE (C.SITUACAO_CT = 0 AND C.SEQ_ORIGINAL = 118455777)
+     WHERE (C.SITUACAO_CT = 0 AND C.SEQ_ORIGINAL = YYYYYYYY)
         OR (C.SITUACAO_CT IN (1, 2, 3) AND C.VL_DO_MES = 0.00 AND
-           C.SEQ_ORIGINAL = 118455777);
+           C.SEQ_ORIGINAL = YYYYYYYY);
   
     IF V_EXISTE = 1 THEN
       UPDATE CONTA C
          SET C.SITUACAO_CT = 9,
-             C.DATA_CANC   = TO_DATE('10/01/2024', 'DD/MM/YYYY')
-       WHERE C.SEQ_ORIGINAL = 118455777
-         AND C.MATRICULA = '0004671651'
-         AND C.ANO_MES_CT = '202312';
+             C.DATA_CANC   = SYSDATE
+       WHERE C.SEQ_ORIGINAL = YYYYYYYY
+         AND C.MATRICULA = 'XXXXXXXX'
+         AND C.ANO_MES_CT = 'QQQQQQ';
       COMMIT;
      
 
@@ -38,15 +38,15 @@ BEGIN
     INTO V_EXISTE
     FROM PARCELA P
    WHERE P.SIT_PARCELA = 11
-     AND P.SEQ_ORIGINAL = 118455777;
+     AND P.SEQ_ORIGINAL = YYYYYYYY;
 
   IF V_EXISTE = 0 THEN
     UPDATE PARCELA P
        SET P.SIT_PARCELA = 11,
            P.DATA_BAIXA  = SYSDATE
-     WHERE P.SEQ_ORIGINAL = 118455777
-       AND P.MATRICULA = '0004671651'
-       AND P.ANO_MES_PARCELA = '202312'
+     WHERE P.SEQ_ORIGINAL = YYYYYYYY
+       AND P.MATRICULA = 'XXXXXXXX'
+       AND P.ANO_MES_PARCELA = 'QQQQQQ'
        AND P.SIT_PARCELA = 1;
   
     COMMIT;
@@ -56,9 +56,9 @@ BEGIN
       SELECT COUNT(*)
         INTO V_EXISTE
         FROM CONTA C
-       WHERE C.SEQ_IMP = 4759
-         AND C.MATRICULA = '0004671651'
-         AND C.ANO_MES_CT = '202312';
+       WHERE C.SEQ_IMP = PPPPP
+         AND C.MATRICULA = 'XXXXXXXX'
+         AND C.ANO_MES_CT = 'QQQQQQ';
     
       IF V_EXISTE = 0 THEN
         INSERT INTO CONTA
@@ -121,10 +121,10 @@ BEGIN
         VALUES
           (SEQ_CONTAS.NEXTVAL,                   --SEQ_ORIGINAL
            0,                                    --TIPO_CT
-           '0004671651',                         --MATRICULA
+           'XXXXXXXX',                         --MATRICULA
            '01001020702981064000',               --LOCALIZACAO
-           '202312',                             --ANO_MES_CT
-           76,                                   --ID_CICLO
+           'QQQQQQ',                             --ANO_MES_CT
+           CC,                                   --ID_CICLO
            0,                                    --SITUACAO_CT
            TO_DATE('23/12/23', 'DD/MM/RR'),      --DATA_FAT
            TO_DATE('08/01/24', 'DD/MM/RR'),      --DATA_VENC
@@ -140,7 +140,7 @@ BEGIN
            000000,                               --ANO_MES_FAT_MULTA
            0,                                    --VL_AGUA
            0,                                    --VL_ESGOTO
-           70.22,                                --VL_SERVICO
+           70.22,                                --VL_SERVICO  XXXX
            0,                                    --VL_COMERC
            0,                                    --VL_ICMS
            0,                                    --VL_MULTA
@@ -150,7 +150,7 @@ BEGIN
            0,                                    --VL_TERCEIRO
            0,                                    --VL_CORRECAO_MONET
            0,                                    --VL_DEVOLUCAO
-           70.22,                                --VL_DO_MES
+           70.22,                                --VL_DO_MES XXXXX
            NULL,                                 --DATA_CONTABIL
            0,                                    --VL_ASEP
            0,                                    --VL_ISS
@@ -162,7 +162,7 @@ BEGIN
            0100102,                              --LOCALIDADE
            0,                                    --VL_RECURSOS_HIDRICOS_AGUA
            0,                                    --VL_RECURSOS_HIDRICOS_ESG
-           4759,                                 --SEQ_IMP
+           PPPPP,                                 --SEQ_IMP
            TO_DATE('07/01/24', 'DD/MM/RR'),      --DATA_VENC_ORIGINAL
            NULL,                                 --NR_TAB
            0,                                    --VL_DESCONTO_RETIFICADO
@@ -173,21 +173,21 @@ BEGIN
            0,                                    --VL_DESCONTO_PP_CONCEDENTE
            1,                                    --CD_SIT_NEGATIVACAO
            1,                                    --QTD_IMPRESSAO
-           70.22,                                --VL_CB
+           70.22,                                --VL_CB   xxxx
            5);                                   --CLASSIF_IMOVEL
       
        COMMIT;
      END IF;
   
-  --------------------------------INSERE PARCELA MES 12 --------------------------
+  --------------------------------INSERE PARCELA MES {} --------------------------
  
       V_EXISTE := 0;
       SELECT COUNT(*)
         INTO V_EXISTE
         FROM PARCELA P
-       WHERE P.SEQ_EXTRA = 4759
-         AND P.MATRICULA = '0004671651'
-         AND P.ANO_MES_PARCELA = '202312';
+       WHERE P.SEQ_EXTRA = PPPPP
+         AND P.MATRICULA = 'XXXXXXXX'
+         AND P.ANO_MES_PARCELA = 'QQQQQQ';
     
       IF V_EXISTE = 0 THEN
         INSERT INTO PARCELA
@@ -236,7 +236,7 @@ BEGIN
            ID_CENTRALIZADOR)
         VALUES
           (SEQ_FINANCIAMENTOS.NEXTVAL,        --ID_FINAN
-           '0004671651',                      --MATRICULA      XXX
+           'XXXXXXXX',                      --MATRICULA      XXX
            '01001020702981064000',            --LOCALIZACAO    XXX
            9032,                              --SERVICO
            3,                                 --TIPO_PARCELA
@@ -246,7 +246,7 @@ BEGIN
            0,                                 --VL_PARCELA_ICMS
            TO_DATE('24/12/23', 'DD/MM/RR'),   --DATA_FATURA      XXX
            1,                                 --SIT_PARCELA
-           '202312',                          --ANO_MES_PARCELA  XXX
+           'QQQQQQ',                          --ANO_MES_PARCELA  XXX
            NULL,                              --SEQ_ORIGINAL
            NULL,                              --DATA_BAIXA
            NULL,                              --DATA_CONTABIL
@@ -255,10 +255,10 @@ BEGIN
            3,                                 --TIPO_COBRANCA
            NULL,                              --NRO_OS            XXX
            1,                                 --QTD_PARCELA
-           76,                                --ID_CICLO
+           CC,                                --ID_CICLO
            TO_DATE('05/08/23', 'DD/MM/RR'),   --DATA_ESPERA
            70.22,                             --VL_TOTAL_PARC    XXX
-           202312,                            --ANO_MES_FAT      XXX
+           QQQQQQ,                            --ANO_MES_FAT      XXX
            0,                                 --VL_ENTRADA
            SYSDATE,                           --DATA_INCLUSAO	 XXX
            2006877,                           --ID_CONTRATO      XXX
@@ -275,7 +275,7 @@ BEGIN
            0,                                 --VL_ENTRADA_ORIGINAL
            70.22,                             --VL_PARCELA_ORIGINAL
            TO_DATE('24/12/23', 'DD/MM/RR'),   --DATA_AUX        XXX
-           4759,                              --SEQ_EXTRA       XXX
+           PPPPP,                              --SEQ_EXTRA       XXX
            NULL,                              --FLAG
            NULL);                             --ID_CENTRALIZADOR
       
@@ -287,9 +287,9 @@ BEGIN
   SELECT COUNT(*)
     INTO V_EXISTE
     FROM RETIFICACAO R
-   WHERE R.SEQ_IMP =  4759
-     AND R.MATRICULA = '0004671651'
- AND R.ANO_MES_CT = '202312';
+   WHERE R.SEQ_IMP =  PPPPP
+     AND R.MATRICULA = 'XXXXXXXX'
+ AND R.ANO_MES_CT = 'QQQQQQ';
 
   IF V_EXISTE = 0 THEN
     INSERT INTO RETIFICACAO
@@ -316,10 +316,10 @@ BEGIN
        SEQ_IMP,
        VL_DESCONTO)
     VALUES 
-      ('0004671651',                         --MATRICULA	   XXX
+      ('XXXXXXXX',                         --MATRICULA	   XXX
    '0100102',                            --LOCALIDADE          XXX
-   '202312',                             --ANO_MES_CT          XXX
-   118455777,                            --SEQ_ORIGEM_CANC     XXX
+   'QQQQQQ',                             --ANO_MES_CT          XXX
+   YYYYYYYY,                            --SEQ_ORIGEM_CANC     XXX
    NULL,                                 --SEQ_ORIGEM_EMIT
    386,                                  --CONSUMO_PEDIDO
    386,                                  --CONSUMO_EMIT
@@ -332,11 +332,11 @@ BEGIN
    NULL,                                 --MOTIVO_RETIF
    1,                                    --TIPO_RETIF
    0,                                    --ID_USUARIO
-   '4759',                               --LAUDO_RETIF       XXX
+   'PPPPP',                               --LAUDO_RETIF       XXX
    NULL,                                 --DATA_CONTABIL
    NULL,                                 --LEITURA_CORRIGIDA
    80,                                   --ID_MOTIVO_RETIFICA
-   4759,                                 --SEQ_IMP           XXX
+   PPPPP,                                 --SEQ_IMP           XXX
    0);                                   --VL_DESCONTO
       
         COMMIT;
@@ -345,9 +345,9 @@ BEGIN
       -------------------------CAPTURANDO O SEQ_ORIGINAL NOVO -----------------------
   FOR N IN (SELECT C.SEQ_ORIGINAL, C.MATRICULA, C.ANO_MES_CT, C.SEQ_IMP
               FROM CONTA C
-             WHERE C.MATRICULA = '0004671651'
-           AND C.SEQ_IMP = 4759
-           AND C.ANO_MES_CT = '202312'
+             WHERE C.MATRICULA = 'XXXXXXXX'
+           AND C.SEQ_IMP = PPPPP
+           AND C.ANO_MES_CT = 'QQQQQQ'
                    AND C.SITUACAO_CT = 0) LOOP
         UPDATE PARCELA P
            SET P.SEQ_ORIGINAL = N.SEQ_ORIGINAL
