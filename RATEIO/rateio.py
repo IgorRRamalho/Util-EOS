@@ -51,18 +51,64 @@ def update_consumo(matricula):
         referencia = input(f"Digite a referência para o mês {i + 1}: ")
         referencias.append(referencia.strip())
 
-    # Dicionário para armazenar as colunas e valores escolhidos pelo usuário
+    # Perguntando ao usuário se as duas referências terão as mesmas colunas modificadas
+    resposta_same_columns = 'N'  # Padrão para não perguntar se há apenas uma referência
+    if num_meses > 1:
+        resposta_same_columns = input("As referências terão as mesmas colunas modificadas? (S/N): ").upper()
+
+    # Lista de colunas disponíveis para atualização
+    colunas_disponiveis = ['confat', 'medconmed', 'media_consumo_faturado', 'credito_consumo', 'leitura', 'credito_utilizado', 'conmed']
+
+    # Dicionário para armazenar os valores escolhidos pelo usuário
     colunas_valores = {}
 
-    # Pedindo as colunas a serem atualizadas e seus valores para cada mês
-    for referencia in referencias:
-        colunas_valores[referencia] = {}
-        print(f"\nEscolha as colunas a serem atualizadas para a referência {referencia}:")
-        for coluna in ['confat', 'medconmed', 'media_consumo_faturado', 'credito_consumo']:
-            resposta = input(f"Você deseja atualizar a coluna {coluna}? (S/N): ")
-            if resposta.upper() == 'S':
-                valor = input(f"Digite o valor para a coluna {coluna}: ")
-                colunas_valores[referencia][coluna] = valor.strip()
+    if resposta_same_columns == 'S':
+        # Se as referências tiverem as mesmas colunas modificadas, pergunte uma vez e use para todas
+        print("\nEscolha as colunas a serem atualizadas:")
+        for i, coluna in enumerate(colunas_disponiveis, start=1):
+            print(f"{i}. {coluna}")
+
+        resposta = input("Digite os números das colunas desejadas separados por vírgula (ou '0' para finalizar): ")
+
+        if resposta == '0':
+            return
+
+        escolhas = resposta.split(',')
+        escolhas_validas = all(escolha.isdigit() and 1 <= int(escolha) <= len(colunas_disponiveis) for escolha in escolhas)
+
+        if not escolhas_validas:
+            print("Escolha inválida. Digite os números correspondentes às colunas desejadas separados por vírgula.")
+            return
+
+        for referencia in referencias:
+            colunas_valores[referencia] = {}
+            for escolha in escolhas:
+                coluna_escolhida = colunas_disponiveis[int(escolha) - 1]
+                valor = input(f"Digite o valor para a coluna {coluna_escolhida} na referência {referencia}: ")
+                colunas_valores[referencia][coluna_escolhida] = valor.strip()
+    else:
+        # Se as referências tiverem colunas diferentes, pergunte para cada referência
+        for referencia in referencias:
+            colunas_valores[referencia] = {}
+            print(f"\nEscolha as colunas a serem atualizadas para a referência {referencia}:")
+            for i, coluna in enumerate(colunas_disponiveis, start=1):
+                print(f"{i}. {coluna}")
+
+            resposta = input("Digite os números das colunas desejadas separados por vírgula (ou '0' para finalizar): ")
+
+            if resposta == '0':
+                continue
+
+            escolhas = resposta.split(',')
+            escolhas_validas = all(escolha.isdigit() and 1 <= int(escolha) <= len(colunas_disponiveis) for escolha in escolhas)
+
+            if escolhas_validas:
+                for escolha in escolhas:
+                    coluna_escolhida = colunas_disponiveis[int(escolha) - 1]
+                    valor = input(f"Digite o valor para a coluna {coluna_escolhida} na referência {referencia}: ")
+                    colunas_valores[referencia][coluna_escolhida] = valor.strip()
+            else:
+                print("Escolha inválida. Digite os números correspondentes às colunas desejadas separados por vírgula.")
 
     # Gerando o script SQL para Update Consumo
     script_sql_consumo = ""
