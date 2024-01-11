@@ -1,4 +1,11 @@
+import pyperclip
+import os
+
+def limpar_tela():
+    os.system('cls')  # Para sistemas Windows
+
 def recalculo_rateio(matricula):
+    limpar_tela()
     try:
         # Pedindo o número de meses para recálculo
         num_meses = int(input("Digite o número de meses para recálculo: "))
@@ -31,11 +38,12 @@ COMMIT;
     # Escrevendo o script SQL no arquivo 'RECALCULO_RATEIO.sql'
     with open('RECALCULO_RATEIO.sql', 'w') as file_rateio:
         file_rateio.write(script_sql_rateio)
-
+    limpar_tela()
     print("Script SQL de Recálculo de Rateio gerado com sucesso. Consulte o arquivo RECALCULO_RATEIO.sql.")
 
 
 def update_consumo(matricula):
+    limpar_tela()
     try:
         # Pedindo o número de meses para update
         num_meses = int(input("Digite o número de meses para update: "))
@@ -55,13 +63,14 @@ def update_consumo(matricula):
     resposta_same_columns = 'N'  # Padrão para não perguntar se há apenas uma referência
     if num_meses > 1:
         resposta_same_columns = input("As referências terão as mesmas colunas modificadas? (S/N): ").upper()
+        
 
     # Lista de colunas disponíveis para atualização
     colunas_disponiveis = ['confat', 'medconmed', 'media_consumo_faturado', 'credito_consumo', 'leitura', 'credito_utilizado', 'conmed']
 
     # Dicionário para armazenar os valores escolhidos pelo usuário
     colunas_valores = {}
-
+    limpar_tela()
     if resposta_same_columns == 'S':
         # Se as referências tiverem as mesmas colunas modificadas, pergunte uma vez e use para todas
         print("\nEscolha as colunas a serem atualizadas:")
@@ -81,6 +90,7 @@ def update_consumo(matricula):
             return
 
         for referencia in referencias:
+            limpar_tela()
             colunas_valores[referencia] = {}
             for escolha in escolhas:
                 coluna_escolhida = colunas_disponiveis[int(escolha) - 1]
@@ -89,12 +99,14 @@ def update_consumo(matricula):
     else:
         # Se as referências tiverem colunas diferentes, pergunte para cada referência
         for referencia in referencias:
+            limpar_tela()
             colunas_valores[referencia] = {}
             print(f"\nEscolha as colunas a serem atualizadas para a referência {referencia}:")
             for i, coluna in enumerate(colunas_disponiveis, start=1):
                 print(f"{i}. {coluna}")
 
             resposta = input("Digite os números das colunas desejadas separados por vírgula (ou '0' para finalizar): ")
+            limpar_tela()
 
             if resposta == '0':
                 continue
@@ -132,32 +144,48 @@ COMMIT;
     with open('UPDATE_CONSUMO.sql', 'w') as file_consumo:
         file_consumo.write(script_sql_consumo)
 
+    limpar_tela()
     print("Script SQL de Update Consumo gerado com sucesso. Consulte o arquivo UPDATE_CONSUMO.sql.")
 
 
+def copiar_select_conta(matricula, referencia):  
+    select_conta = f"""SELECT C.SEQ_ORIGINAL, C.DATA_FAT, C.DATA_VENC, C.LOCALIZACAO, C.ID_CICLO, C.ID_DATA,
+                                   C.LOCALIDADE, C.DATA_VENC_ORIGINAL, C.ID_CONTRATO, C.VL_DO_MES 
+                            FROM CONTA C
+                          WHERE C.MATRICULA = '{matricula}'
+                            AND C.ANO_MES_CT = '{referencia}'; """
+    pyperclip.copy(select_conta)
+    limpar_tela()
+    print("SELECT DE CONTA COPIADO COM SUCESSO")
+
+
 def gerar_conta(matricula):
+    limpar_tela()
     try:
-        # Pedindo os dados necessários para geração de conta
-        referencia = input(f"Digite a referência da conta: ")
-        valor_conta = input("Digite o Valor da Conta: ").strip()
-        seq_original = input("Digite o Seq Original: ").strip()
-        seq_imp = input("Digite o Número do Chamado: ").strip()
-        data_fatura = input("Digite a Data Fatura (DD/MM/RR): ").strip()
-        data_vencimento = input("Digite a Data Vencimento (DD/MM/RR): ").strip()
-        localizacao = input("Digite a LOCALIZACAO: ").strip()
-        ciclo = input("Digite o Ciclo: ").strip()
-        id_data = input("Digite o ID_DATA: ").strip()
-        localidade = input("Digite a Localidade: ").strip()
-        data_vencimento_original = input("Digite a Data Vencimento Original (DD/MM/RR): ").strip()
-        contrato = input("Digite o Contrato: ").strip()
+       # Pedindo os dados necessários para a geração de conta
+        print("\n===================================")
+        referencia = input("| Digite a referência da conta: ")
+        copiar_select_conta(matricula, referencia)
 
-        print("GERAÇÃO DE PARCELA INFOS")
-        #Geração de Parcela
-        data_espera = input(f"Digite data de espera: ").strip()
+        valor_conta = input("| Digite o Valor da Conta: ").strip()
+        seq_original = input("| Digite o Seq Original: ").strip()
+        seq_imp = input("| Digite o Número do Chamado: ").strip()
+        data_fatura = input("| Digite a Data Fatura (DD/MM/RR): ").strip()
+        data_vencimento = input("| Digite a Data Vencimento (DD/MM/RR): ").strip()
+        localizacao = input("| Digite a LOCALIZACAO: ").strip()
+        ciclo = input("| Digite o Ciclo: ").strip()
+        id_data = input("| Digite o ID_DATA: ").strip()
+        localidade = input("| Digite a Localidade: ").strip()
+        data_vencimento_original = input("| Digite a Data Vencimento Original (DD/MM/RR): ").strip()
+        contrato = input("| Digite o Contrato: ").strip()
 
+        print("\n===================================")
         print("GERAÇÃO DE RETIFICAÇÃO INFOS")
-        #Geração de Retificação
-        valor_cance = input(f"Digite o valor cancelado: ").strip()
+        print("===================================")
+        # Geração de Retificação
+        valor_cance = input("| Digite o valor cancelado: ").strip()
+        print("===================================")
+
 
     except ValueError:
         print("Por favor, insira valores válidos.")
@@ -185,15 +213,15 @@ BEGIN
     SELECT COUNT(*)
       INTO V_EXISTE
       FROM CONTA C
-     WHERE (C.SITUACAO_CT = 0 AND C.SEQ_ORIGINAL = '{seq_original}')
+     WHERE (C.SITUACAO_CT = 0 AND C.SEQ_ORIGINAL = {seq_original})
         OR (C.SITUACAO_CT IN (1, 2, 3) AND C.VL_DO_MES = 0.00 AND
-           C.SEQ_ORIGINAL = '{seq_original}');
+           C.SEQ_ORIGINAL = {seq_original});
   
     IF V_EXISTE = 1 THEN
       UPDATE CONTA C
          SET C.SITUACAO_CT = 9,
              C.DATA_CANC   = SYSDATE
-       WHERE C.SEQ_ORIGINAL =  '{seq_original}'
+       WHERE C.SEQ_ORIGINAL =  {seq_original}
          AND C.MATRICULA = '{matricula}'
          AND C.ANO_MES_CT = '{referencia}';
       COMMIT;
@@ -205,13 +233,13 @@ BEGIN
         INTO V_EXISTE
     FROM PARCELA P
     WHERE P.SIT_PARCELA = 11
-    AND P.SEQ_ORIGINAL = '{seq_original}';
+    AND P.SEQ_ORIGINAL = {seq_original};
 
     IF V_EXISTE = 0 THEN
         UPDATE PARCELA P
             SET P.SIT_PARCELA = 11,
             P.DATA_BAIXA  = SYSDATE
-        WHERE P.SEQ_ORIGINAL = '{seq_original}'
+        WHERE P.SEQ_ORIGINAL = {seq_original}
         AND P.MATRICULA = '{matricula}'
         AND P.ANO_MES_PARCELA = '{referencia}'
         AND P.SIT_PARCELA = 1;
@@ -355,7 +383,7 @@ BEGIN
         FROM PARCELA P
        WHERE P.SEQ_EXTRA = {seq_imp}
          AND P.MATRICULA = '{matricula}'
-         AND P.ANO_MES_PARCELA = '{matricula}';
+         AND P.ANO_MES_PARCELA = '{referencia}';
     
       IF V_EXISTE = 0 THEN
         INSERT INTO PARCELA
@@ -424,7 +452,7 @@ BEGIN
            NULL,                                        --NRO_OS                XXX
            1,                                           --QTD_PARCELA
            {ciclo},                                     --ID_CICLO
-           TO_DATE('{data_espera}', 'DD/MM/RR'),        --DATA_ESPERA
+           SYSDATE - 1,                                 --DATA_ESPERA
            {valor_conta},                               --VL_TOTAL_PARC         XXX
            {referencia},                                --ANO_MES_FAT           XXX
            0,                                           --VL_ENTRADA
@@ -542,18 +570,20 @@ END;
     # Escrevendo o script SQL no arquivo 'GERACAO_CONTA.sql'
     with open('GERACAO_CONTA.sql', 'w') as file_conta:
         file_conta.write(script_sql_conta)
-
+    limpar_tela()
     print("Script SQL de Geração de Conta gerado com sucesso. Consulte o arquivo GERACAO_CONTA.sql.")
 
 
 # Solicitando informações ao usuário
 matricula = input("Digite sua matrícula: ")
+limpar_tela()
 # Menu
 while True:
-    print("\n==== Menu ====")
+    print("\n========== Menu || Mat:" + matricula +" ==========")
     print("1. Recálculo de Rateio")
     print("2. Update Consumo")
     print("3. Gerar Conta e outros")
+    print("4. Select Conta")
     print("0. Sair")
 
     escolha = input("Escolha a opção (0-3): ")
@@ -564,8 +594,12 @@ while True:
         update_consumo(matricula)
     elif escolha == '3':
         gerar_conta(matricula)
+    elif escolha == '4':
+        referencia = input("Digite a referencia da conta: ")
+        copiar_select_conta(matricula, referencia)
     elif escolha == '0':
         print("Programa encerrado.")
         break
     else:
+        limpar_tela()
         print("Opção inválida. Tente novamente.")
