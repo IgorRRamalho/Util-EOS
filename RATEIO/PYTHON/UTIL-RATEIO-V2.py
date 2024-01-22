@@ -28,7 +28,7 @@ DECLARE
   V_SIGLA  VARCHAR2(20) := '';
   V_EXISTE INTEGER;
 BEGIN
-  --VALIDAÇÃO EMPRESA
+  --VALIDACAO EMPRESA
   SELECT SIGLA INTO V_SIGLA FROM EMPRESA WHERE ID_EMPRESA = '0001';
   IF V_SIGLA = 'DESO' THEN
 """
@@ -52,7 +52,7 @@ END;
 """
 
     # Escrevendo o script SQL no arquivo 'RECALCULO_RATEIO.sql'
-    with open(f'V{seq_imp}__001__SDES_RECALCULO_RATEIO.sql', 'w') as file_rateio:
+    with open(f'V{seq_imp}_001__SDES_RECALCULO_RATEIO.sql', 'w') as file_rateio:
         file_rateio.write(script_sql_rateio)
 
     limpar_tela()
@@ -584,7 +584,7 @@ END;
 """
 
     # Escrevendo o script SQL no arquivo 'GERACAO_CONTA.sql'
-    with open(f'V{seq_imp}__00X__SDES_GERACAO_CONTA.sql', 'w') as file_conta:
+    with open(f'V{seq_imp}_00X__SDES_GERACAO_CONTA.sql', 'w') as file_conta:
         file_conta.write(script_sql_conta)
     limpar_tela()
     print("Script SQL de Geração de Conta gerado com sucesso. Consulte o arquivo GERACAO_CONTA.sql.")
